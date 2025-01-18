@@ -70,7 +70,30 @@ app.get("/", (req,res) => {
 })
 
 // 2025-1-25
+app.put('/updatebooking/:id', async (req, res) => {
+  try {
+      const { id } = req.params;
+      const { time, hrname, description } = req.body;
 
+      const query = `
+          UPDATE bookings 
+          SET time = $1, hrname = $2, description = $3
+          WHERE id = $4
+          RETURNING *
+      `;
+
+      const result = await pool.query(query, [time, hrname, description, id]);
+
+      if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Booking not found' });
+      }
+
+      res.json({ message: 'Booking updated successfully', booking: result.rows[0] });
+  } catch (err) {
+      console.error('Error updating booking:', err);
+      res.status(500).json({ error: 'Failed to update booking' });
+  }
+});
 app.get("/getalldate", async (req, res) => {
   try {
     const date = req.params.date;
