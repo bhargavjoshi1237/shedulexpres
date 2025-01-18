@@ -16,6 +16,22 @@ const pool = new Pool({
     rejectUnauthorized: false
   }
 });
+app.delete('/deletebooking/:id', async (req, res) => {
+  try {
+      const { id } = req.params;
+      const query = 'DELETE FROM bookings WHERE id = $1 RETURNING *';
+      const result = await pool.query(query, [id]);
+
+      if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Booking not found' });
+      }
+
+      res.json({ message: 'Booking deleted successfully' });
+  } catch (err) {
+      console.error('Error deleting booking:', err);
+      res.status(500).json({ error: 'Failed to delete booking' });
+  }
+});
 async function initDatabase() {
   try {
     await pool.query(`
