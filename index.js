@@ -1,6 +1,13 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const { Pool } = require('pg');
+
+app.use(cors({
+  origin: ['http://localhost:3000'],
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 
 app.use(express.json());
 const pool = new Pool({
