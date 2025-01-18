@@ -69,14 +69,28 @@ app.get("/", (req,res) => {
   res.json("hello world")
 })
 
+// 2025-1-25
+
+app.get("/getalldate", async (req, res) => {
+  try {
+    const date = req.params.date;
+    const query = `
+      SELECT * FROM bookings`;
+    
+    const result = await pool.query(query, date);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching bookings:', err);
+    res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+});
 
 app.get("/getbydate/:date", async (req, res) => {
   try {
     const date = req.params.date;
     const query = `
       SELECT * FROM bookings 
-      WHERE date = ${date} 
-      ORDER BY start_time`;
+      WHERE dates = $1`;
     
     const result = await pool.query(query, [date]);
     res.json(result.rows);
